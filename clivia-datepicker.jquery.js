@@ -5,7 +5,7 @@
 		factory(jQuery);
 	}
 })(function( $ ) {
-
+	var _duration = 150;
 	function _formatDate(year, month, date, format) {
 		if (typeof format === 'undefined') format = 'yyyy-mm-dd';
 		var str = '',
@@ -30,6 +30,20 @@
 		str += signs[1] + date;
 
 		return str;
+	}
+
+	function _checkFormat(date, format) {
+		var reg = /yyyy(.*)mm(.*)dd/,
+			matches = format.match(reg),
+			signs = (typeof matches === 'object' && matches.length == 3) ? matches.slice(1) : [],
+			dateMatches = date.match(/(\d{4}).*(\d{2}).*(\d{2})/),
+			dates = (typeof dateMatches === 'object' && dateMatches.length === 4) ? dateMatches.slice(1) : [];
+
+		if (!signs || !signs.length) return false;
+		if (!dateMatches || !dateMatches.length) return false;
+		if (!dates || !dates.length) return false;
+		if (date != dates[0] + signs[0] + dates[1] + signs[1] + dates[2]) return false;
+		return true;
 	}
 
 	function _focusDate(ceil) {
@@ -60,10 +74,10 @@
 		});
 	}
 
-	function _calculateDate(year, month, count, callback) {
+	function _calculateDate(year, month, count, format, callback) {
 		var status = '',
-			firstDate = _formatDate(year, month, 1),
-			lastDate = _formatDate(year, month, (new Date(year, month, 0)).getDate());
+			firstDate = _formatDate(year, month, 1, format),
+			lastDate = _formatDate(year, month, (new Date(year, month, 0)).getDate(), format);
 
 		if (count <= (new Date(firstDate)).getDay()) {
 			thisDate = ((new Date(year, month - 1, 0)).getDate() + (count - (new Date(firstDate)).getDay()));
@@ -83,16 +97,16 @@
 		}
 	}
 
-	function _setCalendarCeil(year, month, date, calendarContainer) {
-		var total = ((new Date(_formatDate(year, month, 1))).getDay()) + (6 - (new Date(_formatDate(year, month, (new Date(year, month, 0)).getDate()))).getDay()) + (new Date(year, month, 0)).getDate(),
-			currentDate = _formatDate(year, month, date);
+	function _setCalendarCeil(year, month, date, format, calendarContainer) {
+		var total = ((new Date(_formatDate(year, month, 1, format))).getDay()) + (6 - (new Date(_formatDate(year, month, (new Date(year, month, 0)).getDate(), format))).getDay()) + (new Date(year, month, 0)).getDate(),
+			currentDate = _formatDate(year, month, date, format);
 		
 		for (var i=1; i<=total; i++) {
-			_calculateDate(year, month, i, function(count, date, status) {
+			_calculateDate(year, month, i, format, function(count, date, status) {
 				var ceil = $('<div class="clivia-calendar-date-ceil"></div>').css({display:'inline-block',width:35,height:26,textAlign:'center',padding:2,cursor:'pointer'});
 				switch (status) {
 					case 'thisMonth':
-						ceil.data('clivia-date-value', _formatDate(year, month, date));
+						ceil.data('clivia-date-value', _formatDate(year, month, date, format));
 						ceil.addClass('clivia-date-this-month');
 						ceil.css({
 							backgroundColor: '#F5F5F5',
@@ -100,7 +114,7 @@
 						});
 						break;
 					case 'lastMonth':
-						ceil.data('clivia-date-value', _formatDate((month == 1 ? year - 1 : year), (month == 1 ? 12 : month - 1), date));
+						ceil.data('clivia-date-value', _formatDate((month == 1 ? year - 1 : year), (month == 1 ? 12 : month - 1), date, format));
 						ceil.addClass('clivia-date-last-month');
 						ceil.css({
 							backgroundColor: '#fff',
@@ -108,7 +122,7 @@
 						});
 						break;
 					case 'nextMonth':
-						ceil.data('clivia-date-value', _formatDate((month == 12 ? year + 1 : year), (month == 12 ? 1 : month + 1), date));
+						ceil.data('clivia-date-value', _formatDate((month == 12 ? year + 1 : year), (month == 12 ? 1 : month + 1), date, format));
 						ceil.addClass('clivia-date-next-month');
 						ceil.css({
 							backgroundColor: '#fff',
@@ -136,11 +150,11 @@
 		}
 	}
 
-	function _setCalendarPanel(year, month, date, calendarPanel) {
+	function _setCalendarPanel(year, month, date, format, calendarPanel) {
 		var calendarContainer = calendarPanel.find('.clivia-calendar-container');
 		calendarPanel.find('.clivia-calendar-month-title .clivia-calendar-month').text(year + '年' + month + '月');
 		
-		_setCalendarCeil(year, month, date, calendarContainer);
+		_setCalendarCeil(year, month, date, format, calendarContainer);
 
 		calendarContainer.css({
 			display: 'inline-block',
@@ -154,7 +168,7 @@
 					  	 calendarPanel.find('.clivia-calendar-date-ceil').remove();
 					  	 month = (month - 1 > 0) ? month - 1 : 12;
 					  	 year = (month == 12) ? year - 1 : year;
-					  	 _setCalendarPanel(year, month, date, calendarPanel);
+					  	 _setCalendarPanel(year, month, date, format, calendarPanel);
 					 });
 
 		calendarPanel.find('a.clivia-calendar-next-month')
@@ -164,7 +178,7 @@
 					  	 calendarPanel.find('.clivia-calendar-date-ceil').remove();
 					  	 month = (month + 1 > 12) ? month - 11 : month + 1;
 					  	 year = (month == 1) ? year + 1 : year;
-					  	 _setCalendarPanel(year, month, date, calendarPanel);
+					  	 _setCalendarPanel(year, month, date, format, calendarPanel);
 					 });
 		calendarPanel.find('.clivia-calendar-date-ceil')
 					 .off('click')
@@ -174,8 +188,31 @@
 					 });
 	}
 
-	$.fn.datepicker = function() {
-		var _this = this, _duration = 150,
+	function _setValue(target, value, format) {
+		target.val(value);
+		if (!_checkFormat(value, format)) resetValue(target);
+		else {
+			target.next('.clivia-calendar-panel').find('.clivia-calendar-date-ceil').each(function() {
+				var ceilValue = $(this).data('clivia-date-value');
+				if (ceilValue == value) {
+					_focusDate($(this));
+				}
+			});
+		}
+	}
+
+	function _resetValue(target, format) {
+		target.val(_formatDate((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate(), format));
+		target.next('.clivia-calendar-panel').find('.clivia-calendar-date-ceil').each(function() {
+			var ceilValue = $(this).data('clivia-date-value');
+			if (ceilValue == target.val()) {
+				_focusDate($(this));
+			}
+		});
+	}
+
+	$.fn.datepicker = function(params, value) {
+		var _this = this, _defaults = {},
 			_year = (new Date()).getFullYear(),
 			_month = (new Date()).getMonth() + 1,
 			_date = (new Date()).getDate(),
@@ -185,6 +222,31 @@
 			_calendarContainer = $('<div class="clivia-calendar-container"></div>'),
 			_weekContainer = $('<div class="clivia-calendar-week-container"></div>');
 		
+		_defaults.format = "yyyy-mm-dd";
+
+		if (typeof params === 'string') {
+			if (typeof _this.data('clivia-params') === 'object') $.extend(_defaults, _this.data('clivia-params'));
+			switch (params) {
+				case 'set':
+					_setValue.call(null, _this, value, _defaults.format);
+					break;
+				case 'reset':
+					_resetValue.call(null, _this, _defaults.format);
+					break;
+				case 'show':
+
+			}
+			return _this;
+		}
+		
+		if (typeof params === 'object') {
+			if (/yyyy(.*)mm(.*)dd/.test(params.format)) {
+				$.extend(_defaults, params);
+			}
+		}
+
+		_this.data('clivia-params', _defaults);
+
 		$(document).delegate('.clivia-calendar-date-ceil', 'fillDate', function() {
 			_this.val($(this).data('clivia-date-value'));
 		});
@@ -234,13 +296,13 @@
 		}
 		_weekContainer.css({width:'100%',marginBottom:5,fontWeight:'bold',color:'#4545FF'}).appendTo(_calendarContainer);
 		_calendarContainer.appendTo(_calendarPanel, _calendarPanel);
-		_setCalendarPanel(_year, _month, _date, _calendarPanel)
+		_setCalendarPanel(_year, _month, _date, _defaults.format, _calendarPanel)
 		_calendarPanel.insertAfter(_this);
 
 		_this.on('click', function(e) {
 			e.preventDefault();
 			if (_calendarPanel.css('display') === 'none') {
-				_this.val(_formatDate(_year, _month, _date));
+				if(_this.val() == '') _this.val(_formatDate(_year, _month, _date));
 				_calendarPanel.fadeIn(_duration);
 				_calendarPanel.css({top: _this.position().top + _this.outerHeight(false) + 10});
 				_calendarPanel.css({left: _this.position().left});
@@ -248,7 +310,8 @@
 				_calendarPanel.fadeOut(_duration);
 			}
 		}).on('blur', function(e) {
-			_calendarPanel.fadeOut(_duration);
+			console.log(e);
 		});
+		return _this;
 	}
 });
