@@ -309,8 +309,6 @@
 			} else {
 				_calendarPanel.fadeOut(_duration);
 			}
-		}).on('blur', function(e) {
-			console.log(e);
 		});
 		return _this;
 	}
