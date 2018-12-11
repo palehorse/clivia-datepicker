@@ -202,13 +202,20 @@
 	}
 
 	function _resetValue(target, format) {
-		target.val(_formatDate((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate(), format));
 		target.next('.clivia-calendar-panel').find('.clivia-calendar-date-ceil').each(function() {
 			var ceilValue = $(this).data('clivia-date-value');
 			if (ceilValue == target.val()) {
 				_focusDate($(this));
 			}
 		});
+	}
+
+	function _show(target) {
+		target.next('.clivia-calendar-panel').fadeIn(_duration);
+	}
+
+	function _hide(target) {
+		target.next('.clivia-calendar-panel').fadeOut(_duration);
 	}
 
 	$.fn.datepicker = function(params, value) {
@@ -234,7 +241,11 @@
 					_resetValue.call(null, _this, _defaults.format);
 					break;
 				case 'show':
-
+					_show.call(null, _this);
+					break;
+				case 'hide':
+					_hide.call(null, _this);
+					break;
 			}
 			return _this;
 		}
