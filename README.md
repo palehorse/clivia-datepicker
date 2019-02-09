@@ -16,7 +16,7 @@ npm install clivia-datepicker
 require('clivia-datepickerr/clivia-datepicker.jquery.js');
 ```
 
-<img src="https://github.com/palehorse/photos/blob/master/clivia-datepicker.png" width="300">
+<img src="https://github.com/palehorse/photos/blob/master/clivia-datepicker.png" width="420">
 
 ## 使用方法
 #### 初始化
