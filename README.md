@@ -20,3 +20,28 @@ require('clivia-datepickerr/clivia-datepicker.jquery.js');
 ``` javascript
 $('#datepicker').datepicker();
 ```
+#### 日期格式
+``` javascript
+$('#datepicker').datepicker({format: 'yyyy/mm/dd'});
+```
+## API
+#### set
+``` javascript
+//設定初始日期
+$('#datepicker').datepicker('set', '2019-01-01');
+```
+#### reset
+``` javascript
+//重設日期
+$('#datepicker').datepicker('reset');
+```
+#### show
+``` javascript
+//讓日期選擇器出現
+$('#datepicker').datepicker('show');
+```
+#### hide
+``` javascript
+//隱藏日期選擇器
+$('#datepicker').datepicker('hide');
+```
