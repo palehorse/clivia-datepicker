@@ -14,6 +14,9 @@ npm install clivia-datepicker
 #### Vue
 ```javascript
 require('clivia-datepickerr/clivia-datepicker.jquery.js');
+
+![image](https://github.com/palehorse/photos/blob/master/clivia-datepicker.png)
+
 ```
 ## 使用方法
 #### 初始化
