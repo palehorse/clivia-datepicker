@@ -284,7 +284,7 @@
 			textDecoration: 'none',
 			textAlign: 'center',
 			fontWeight: 'bold',
-			fontSize: '1.2rem',
+			fontSize: 20,
 			display: 'inline-block',
 			width: '6%',
 		});
@@ -294,14 +294,14 @@
 			textDecoration: 'none',
 			textAlign: 'center',
 			fontWeight: 'bold',
-			fontSize: '1.2rem',
+			fontSize: 20,
 			display: 'inline-block',
 			width: '6%',
 		});
 		_monthTitle.appendTo(_calendarPanel);
 
 		for (var i=0; i<_week.length; i++) {
-			var day = $('<div class="clivia-calendar-date-week"></div>').css({display:'inline-block',width:35,height:26,textAlign:'center',padding:2}) ;
+			var day = $('<div class="clivia-calendar-date-week"></div>').css({display:'inline-block',width:35,height:26,fontSize:14,textAlign:'center',padding:2}) ;
 			day.html(_week[i]);
 			day.appendTo(_weekContainer);
 		}
