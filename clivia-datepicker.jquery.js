@@ -158,7 +158,8 @@
 
 		calendarContainer.css({
 			display: 'inline-block',
-			width: 245,
+			width: 280,
+			textAlign: 'center',
 		});
 
 		calendarPanel.find('a.clivia-calendar-last-month')
