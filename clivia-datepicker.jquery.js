@@ -103,7 +103,7 @@
 		
 		for (var i=1; i<=total; i++) {
 			_calculateDate(year, month, i, format, function(count, date, status) {
-				var ceil = $('<div class="clivia-calendar-date-ceil"></div>').css({display:'inline-block',width:35,height:26,textAlign:'center',padding:2,cursor:'pointer'});
+				var ceil = $('<div class="clivia-calendar-date-ceil"></div>').css({display:'inline-block',width:38,height:30,textAlign:'center',padding:2,cursor:'pointer'});
 				switch (status) {
 					case 'thisMonth':
 						ceil.data('clivia-date-value', _formatDate(year, month, date, format));
@@ -158,8 +158,7 @@
 
 		calendarContainer.css({
 			display: 'inline-block',
-			width: 280,
-			textAlign: 'center',
+			width: 266,
 		});
 
 		calendarPanel.find('a.clivia-calendar-last-month')
@@ -302,7 +301,7 @@
 		_monthTitle.appendTo(_calendarPanel);
 
 		for (var i=0; i<_week.length; i++) {
-			var day = $('<div class="clivia-calendar-date-week"></div>').css({display:'inline-block',width:35,height:26,fontSize:14,textAlign:'center',padding:2}) ;
+			var day = $('<div class="clivia-calendar-date-week"></div>').css({display:'inline-block',width:38,height:30,fontSize:14,textAlign:'center',padding:2}) ;
 			day.html(_week[i]);
 			day.appendTo(_weekContainer);
 		}
